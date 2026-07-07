@@ -1,0 +1,53 @@
+name: Trello <-> GitHub Sync
+
+on:
+  schedule:
+    # Cron do GitHub Actions é sempre em UTC. Pernambuco (America/Recife) = UTC-3,
+    # sem horário de verão. Queremos rodar de hora em hora, EXCETO 00:00–06:00 local.
+    #   00:00–06:00 local  ==  03:00–08:59 UTC  -> NÃO roda
+    #   sobram em UTC: 09–23 e 00–02            -> roda
+    # (O script ainda confere a hora local em America/Recife como trava extra.)
+    - cron: '0 0-2,9-23 * * *'
+  workflow_dispatch: {}   # botão "Run workflow" para rodar na hora
+
+concurrency:
+  group: trello-sync
+  cancel-in-progress: false
+
+permissions:
+  contents: write   # para commitar o arquivo de estado
+  issues: write     # para criar/editar issues
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Rodar sincronização
+        env:
+          # Obrigatórias — cadastre em Settings > Secrets and variables > Actions > Secrets
+          TRELLO_KEY:      ${{ secrets.TRELLO_KEY }}
+          TRELLO_TOKEN:    ${{ secrets.TRELLO_TOKEN }}
+          TRELLO_BOARD_ID: ${{ secrets.TRELLO_BOARD_ID }}
+          # Já vêm prontos, não precisa cadastrar:
+          GH_TOKEN:        ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO:         ${{ github.repository }}
+          # Opcionais — cadastre em ... > Variables (não são segredo)
+          TRELLO_DONE_LIST:        ${{ vars.TRELLO_DONE_LIST }}
+          TRELLO_NEW_CARD_LIST:    ${{ vars.TRELLO_NEW_CARD_LIST }}
+          MEMBER_MAP:              ${{ vars.MEMBER_MAP }}
+          MIRROR_ISSUES_TO_TRELLO: ${{ vars.MIRROR_ISSUES_TO_TRELLO }}
+        run: node sync.mjs
+
+      - name: Salvar estado (commit)
+        run: |
+          if [[ -n "$(git status --porcelain .trello-sync-state.json)" ]]; then
+            git config user.name  "trello-sync-bot"
+            git config user.email "actions@users.noreply.github.com"
+            git add .trello-sync-state.json
+            git commit -m "chore: estado do sync Trello<->GitHub [skip ci]"
+            git push
+          else
+            echo "Sem mudanças no estado."
+          fi

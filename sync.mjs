@@ -82,6 +82,8 @@ if (inQuiet) {
 // ── Helpers de API ────────────────────────────────────────────────────────────
 const sha1 = (o) => crypto.createHash('sha1').update(typeof o === 'string' ? o : JSON.stringify(o)).digest('hex');
 const sortA = (a) => (a || []).slice().sort();
+// normaliza p/ comparar nomes de lista sem depender de acento/maiúscula
+const norm = (s) => (s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
 
 async function trello(path, { method = 'GET', params = {} } = {}) {
   const url = new URL('https://api.trello.com/1' + path);
@@ -133,9 +135,18 @@ function saveState(s) { fs.writeFileSync(STATE_FILE, JSON.stringify(s, null, 2) 
 console.log('📥 Lendo Trello e GitHub…');
 
 const lists = await trello(`/boards/${BOARD_ID}/lists`, { params: { fields: 'name' } });
-const listByName = new Map(lists.map(l => [l.name.toLowerCase(), l.id]));
-const doneListId    = listByName.get(DONE_LIST_NAME.toLowerCase()) || null;
-const newCardListId = (NEW_CARD_LIST_NAME && listByName.get(NEW_CARD_LIST_NAME.toLowerCase())) || (lists[0] && lists[0].id);
+const listByName   = new Map(lists.map(l => [norm(l.name), l.id]));
+const listNameById = new Map(lists.map(l => [l.id, l.name]));
+
+// "Concluído" = fechado. Aceita vários nomes (separados por vírgula) e casa por
+// trecho, sem acento/maiúscula. Default cobre PT ("conclu…") e EN ("done").
+const DONE_PATTERNS = ((env.TRELLO_DONE_LIST && env.TRELLO_DONE_LIST.trim()) ? env.TRELLO_DONE_LIST : 'done,conclu')
+  .split(',').map(s => norm(s)).filter(Boolean);
+const doneListIds = new Set(
+  lists.filter(l => DONE_PATTERNS.some(p => norm(l.name) === p || norm(l.name).includes(p))).map(l => l.id)
+);
+const primaryDoneListId = [...doneListIds][0] || null; // p/ onde mover card quando a issue fecha
+const newCardListId = (NEW_CARD_LIST_NAME && listByName.get(norm(NEW_CARD_LIST_NAME))) || (lists[0] && lists[0].id);
 
 const boardLabels = await trello(`/boards/${BOARD_ID}/labels`, { params: { fields: 'name,color', limit: 1000 } });
 const labelById   = new Map(boardLabels.map(l => [l.id, l]));
@@ -162,6 +173,9 @@ const cards = await trello(`/boards/${BOARD_ID}/cards`, {
 
 const allIssues = (await ghPaged(`/repos/${OWNER}/${REPO}/issues?state=all`)).filter(i => !i.pull_request);
 const repoLabels = new Set((await ghPaged(`/repos/${OWNER}/${REPO}/labels`)).map(l => l.name.toLowerCase()));
+// Só é possível atribuir como responsável quem tem acesso ao repo (colaboradores).
+// Guardamos lower->loginReal para casar sem depender de maiúsculas.
+const assignableByLower = new Map((await ghPaged(`/repos/${OWNER}/${REPO}/assignees`)).map(u => [u.login.toLowerCase(), u.login]));
 
 const issueByNumber = new Map(allIssues.map(i => [i.number, i]));
 const cardById      = new Map(cards.map(c => [c.id, c]));
@@ -206,15 +220,26 @@ async function ensureTrelloLabel(name) {
 const cardLabelObjs  = (c) => (c.idLabels || []).map(id => labelById.get(id)).filter(l => l && l.name);
 const cardLabelNames = (c) => cardLabelObjs(c).map(l => l.name).sort();
 
-// ── Tradução de responsáveis (por MEMBER_MAP, e por email quando possível) ────
-const ghEmailCache = new Map();
+// ── Tradução de responsáveis ──────────────────────────────────────────────────
+// Ordem de tentativa: MEMBER_MAP -> mesmo @username no GitHub -> email (se exposto).
+// Cada candidato só é aceito se puder ser atribuído no repo (é colaborador).
+const loginMemo = new Map();
 async function ghLoginForMember(mid) {
-  const m = memberById.get(mid); if (!m) return null;
-  if (t2gMember.has(m.username.toLowerCase())) return t2gMember.get(m.username.toLowerCase());
-  if (m.email) {
-    try { const r = await gh(`/search/users?q=${encodeURIComponent(m.email)}+in:email`); if (r && r.items && r.items[0]) return r.items[0].login; } catch {}
+  if (loginMemo.has(mid)) return loginMemo.get(mid);
+  const m = memberById.get(mid);
+  let result = null;
+  if (m) {
+    const cands = [];
+    const mapped = t2gMember.get(m.username.toLowerCase());
+    if (mapped) cands.push(mapped);       // 1) mapeamento manual (mais confiável)
+    cands.push(m.username);               // 2) muita gente reusa o mesmo @ nos dois
+    if (m.email) {                        // 3) email, quando o Trello expõe
+      try { const r = await gh(`/search/users?q=${encodeURIComponent(m.email)}+in:email`); if (r?.items?.[0]) cands.push(r.items[0].login); } catch {}
+    }
+    for (const c of cands) { const hit = assignableByLower.get(String(c).toLowerCase()); if (hit) { result = hit; break; } }
   }
-  return null;
+  loginMemo.set(mid, result);
+  return result;
 }
 async function resolveAssignees(card) {
   const out = [];
@@ -268,7 +293,7 @@ function stripBlock(body) {
   return body.trim();
 }
 
-const cardState = (c) => (c.closed || (doneListId && c.idList === doneListId)) ? 'closed' : 'open';
+const cardState = (c) => (c.closed || doneListIds.has(c.idList)) ? 'closed' : 'open';
 
 // ── Aplicadores ───────────────────────────────────────────────────────────────
 async function applyIssueFromCard(iss, card, desired) {
@@ -283,8 +308,8 @@ async function applyCardFromIssue(card, desired) {
   const idLabels = [];
   for (const n of desired.labels) { const id = await ensureTrelloLabel(n); if (id) idLabels.push(id); }
   const params = { name: desired.title, desc: desired.desc.slice(0, 16000), idLabels };
-  if (desired.state === 'closed') { if (doneListId) params.idList = doneListId; }
-  else if (doneListId && card.idList === doneListId) { params.idList = newCardListId; }
+  if (desired.state === 'closed') { if (primaryDoneListId) params.idList = primaryDoneListId; }
+  else if (doneListIds.has(card.idList)) { params.idList = newCardListId; }
   if (DRY_RUN) { console.log(`   [dry] atualizaria card ${card.id}`); return; }
   await trello(`/cards/${card.id}`, { method: 'PUT', params });
 }
@@ -333,9 +358,18 @@ async function createCardFromIssue(iss, state) {
   for (const n of d.labels) { const id = await ensureTrelloLabel(n); if (id) idLabels.push(id); }
   if (idLabels.length) await trello(`/cards/${card.id}`, { method: 'PUT', params: { idLabels } });
   await trello(`/cards/${card.id}/attachments`, { method: 'POST', params: { url: iss.html_url, name: `GitHub Issue #${iss.number}` } });
-  if (d.state === 'closed' && doneListId) await trello(`/cards/${card.id}`, { method: 'PUT', params: { idList: doneListId } });
+  if (d.state === 'closed' && primaryDoneListId) await trello(`/cards/${card.id}`, { method: 'PUT', params: { idList: primaryDoneListId } });
   state.pairs[card.id] = { issue: iss.number, origin: 'github', hash: sha1(d) };
   console.log(`   ✅ Card "${iss.title}" criado da issue #${iss.number}`);
+}
+
+// ── Diagnóstico (ajuda a conferir o que está pareando) ────────────────────────
+console.log(`🏁 Lista(s) tratada(s) como CONCLUÍDO (viram issue fechada): ${[...doneListIds].map(id => `"${listNameById.get(id)}"`).join(' | ') || '⚠️ NENHUMA — nada será fechado! Confira TRELLO_DONE_LIST.'}`);
+console.log(`📥 Cards vindos de issues cairão na lista: "${listNameById.get(newCardListId) || '?'}"`);
+console.log('👤 Membros do board × responsável no GitHub:');
+for (const m of memberById.values()) {
+  const login = await ghLoginForMember(m.id);
+  console.log(`   • @${m.username}${m.fullName ? ` (${m.fullName})` : ''} -> ${login ? `@${login} ✅` : '❌ sem correspondência (adicione ao MEMBER_MAP e convide como colaborador do repo)'}`);
 }
 
 // ── Loop principal ────────────────────────────────────────────────────────────

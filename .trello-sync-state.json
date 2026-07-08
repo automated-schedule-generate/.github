@@ -104,6 +104,11 @@
       "issue": 1,
       "origin": "github",
       "hash": "30a9ae84dea4308efba98f0b7430c11a2d26bf27"
+    },
+    "6a4e37a9464e1b1c22b9fa1a": {
+      "issue": 37,
+      "origin": "trello",
+      "hash": "6917f8adde5d678695b6ce087faebb98330dada7"
     }
   }
 }

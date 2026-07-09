@@ -36,12 +36,6 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 
 const env = process.env;
-
-
-console.log('testing', env["GH_TOKEN"]);
-console.log('testing 2', env["MEMBER_MAP"]);
-
-
 const req = (k) => {
   const v = env[k];
   if (!v) {

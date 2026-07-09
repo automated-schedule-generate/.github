@@ -15,11 +15,6 @@
       "origin": "trello",
       "hash": "34b2d725c33cf0d000daafa54cea609542b086b3"
     },
-    "6a33fa79718c295e36fddce8": {
-      "issue": 28,
-      "origin": "trello",
-      "hash": "c7529e0877a41d34701ba2eec6f74e7414352ed3"
-    },
     "6a4bed75e2c05aded1941e61": {
       "issue": 29,
       "origin": "trello",
@@ -65,50 +60,10 @@
       "origin": "github",
       "hash": "df940ea71d92454d09880c014b877dd9e987f415"
     },
-    "6a4d9ec6b2c502ee49f77b06": {
-      "issue": 11,
-      "origin": "github",
-      "hash": "e7b0dc4453af15c516e4fd7d88a51da6e634a87f"
-    },
-    "6a4d9ec762d849b1fd077653": {
-      "issue": 8,
-      "origin": "github",
-      "hash": "2321d323ea6d50d2e26dc9ce1cb078164e38b1ac"
-    },
     "6a4d9ec9c4b26dc71a5d1e5e": {
       "issue": 7,
       "origin": "github",
       "hash": "0555869b1a369389d5253087898c62d9f1dc1cee"
-    },
-    "6a4d9eca55dbe79db8d27bd9": {
-      "issue": 6,
-      "origin": "github",
-      "hash": "9455364695bc45c133e431fd6ed21d6c2e1151a8"
-    },
-    "6a4d9ecb03cbf3c847b8f6ea": {
-      "issue": 4,
-      "origin": "github",
-      "hash": "17509252fba2a5fe0fa078c77cc3485b70b89db2"
-    },
-    "6a4d9ecdc4791927a4d99194": {
-      "issue": 3,
-      "origin": "github",
-      "hash": "d4f5238d0cda5b7975a0bcefe19aa05bc89a4c52"
-    },
-    "6a4d9ecf604dfc405eb40361": {
-      "issue": 2,
-      "origin": "github",
-      "hash": "adb60b5e7f08b187a21863779ec5457007cf287a"
-    },
-    "6a4d9ed0308be02ee0b3ad50": {
-      "issue": 1,
-      "origin": "github",
-      "hash": "30a9ae84dea4308efba98f0b7430c11a2d26bf27"
-    },
-    "6a4e37a9464e1b1c22b9fa1a": {
-      "issue": 37,
-      "origin": "trello",
-      "hash": "6917f8adde5d678695b6ce087faebb98330dada7"
     },
     "6a4ee4f8af83d447037d3c45": {
       "issue": 38,

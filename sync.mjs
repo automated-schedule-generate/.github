@@ -153,6 +153,7 @@ const labelById   = new Map(boardLabels.map(l => [l.id, l]));
 const labelByName = new Map(boardLabels.filter(l => l.name).map(l => [l.name.toLowerCase(), l]));
 
 const boardMembers = await trello(`/boards/${BOARD_ID}/members`, { params: { fields: 'username,fullName' } });
+console.log(boardMembers);
 const memberById = new Map();
 for (const m of boardMembers) {
   let email = null;

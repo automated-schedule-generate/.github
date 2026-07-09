@@ -38,7 +38,7 @@
     "6a2b04a931b837973c4108f5": {
       "issue": 32,
       "origin": "trello",
-      "hash": "beaa0a8b7148b8cc08fcab90fa24cc584474b2ba"
+      "hash": "8ba4b07159fd274c23b4f09f6c7056407fe88fba"
     },
     "6a2b038f49913ad05ad5b69c": {
       "issue": 33,
@@ -109,6 +109,16 @@
       "issue": 37,
       "origin": "trello",
       "hash": "6917f8adde5d678695b6ce087faebb98330dada7"
+    },
+    "6a4ee4f8af83d447037d3c45": {
+      "issue": 38,
+      "origin": "trello",
+      "hash": "bd10a5871517288654f76f007220d8e11abb2bc2"
+    },
+    "6a4ee527d5ff94fbf7fc2586": {
+      "issue": 39,
+      "origin": "trello",
+      "hash": "59d6c8aedcf01c01112355983ea4a02183640ffe"
     }
   }
 }

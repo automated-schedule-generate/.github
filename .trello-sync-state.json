@@ -8,7 +8,7 @@
     "6a2b0634c5b678ca804f4da5": {
       "issue": 26,
       "origin": "trello",
-      "hash": "2f521078d55421afc15e39cee2b1945c9b441c4c"
+      "hash": "5071b4b9a5fdd577dbf0c87333e1b2e24450be0f"
     },
     "6a33fa035c2ae5f227c0aaf6": {
       "issue": 27,
@@ -74,6 +74,11 @@
       "issue": 40,
       "origin": "trello",
       "hash": "8cd79ed6f938b4d5995ca1c2bd6dda5584f12a78"
+    },
+    "6a4f8b61d7203237eccb7573": {
+      "issue": 42,
+      "origin": "trello",
+      "hash": "96e42dd1e4b0d7d31290537d1d587fcd72608515"
     }
   }
 }

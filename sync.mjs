@@ -240,6 +240,9 @@ async function ghLoginForMember(mid) {
     for (const c of cands) { const hit = assignableByLower.get(String(c).toLowerCase()); if (hit) { result = hit; break; } }
   }
   loginMemo.set(mid, result);
+
+  console.log('mid', mid);
+  console.log('result', result);
   return result;
 }
 async function resolveAssignees(card) {

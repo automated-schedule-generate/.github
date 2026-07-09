@@ -234,9 +234,11 @@ async function ghLoginForMember(mid) {
   if (m) {
     const cands = [];
     const mapped = t2gMember.get(m.username.toLowerCase());
+    console.log('1 mapped', mapped);
     if (mapped) cands.push(mapped);       // 1) mapeamento manual (mais confiável)
     cands.push(m.username);               // 2) muita gente reusa o mesmo @ nos dois
-    if (m.email) {                        // 3) email, quando o Trello expõe
+    console.log('1 cands', cands);
+    if (m.username) {                     // 3) username, quando o Trello expõe
       try { 
         console.log('1 m', m)
         const r = await gh(`/search/users?q=${encodeURIComponent(m.username)}+in:username`);
@@ -246,7 +248,11 @@ async function ghLoginForMember(mid) {
         console.log('error in ghLoginForMember', error);
       }
     }
-    for (const c of cands) { const hit = assignableByLower.get(String(c).toLowerCase()); if (hit) { result = hit; break; } }
+    for (const c of cands) { 
+      const hit = assignableByLower.get(String(c).toLowerCase());
+      console.log('2 cands', c);
+      if (hit) { result = hit; break; } 
+    }
   }
   loginMemo.set(mid, result);
 

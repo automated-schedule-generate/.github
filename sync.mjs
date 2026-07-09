@@ -38,7 +38,7 @@ import fs from "node:fs";
 const env = process.env;
 
 
-console.log('testing', env["MY_PERSON"]);
+console.log('testing', env["GH_TOKEN"]);
 console.log('testing 2', env["MEMBER_MAP"]);
 
 
@@ -54,7 +54,7 @@ const req = (k) => {
 const TRELLO_KEY = req("TRELLO_KEY");
 const TRELLO_TOKEN = req("TRELLO_TOKEN");
 const BOARD_ID = req("TRELLO_BOARD_ID");
-const GH_TOKEN = req("MY_TOKEN_PERSON");
+const GH_TOKEN = req("GH_TOKEN");
 
 const [OWNER, REPO] = req("GH_REPO").split("/");
 

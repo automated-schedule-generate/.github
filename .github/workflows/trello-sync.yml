@@ -31,7 +31,7 @@ jobs:
           TRELLO_TOKEN:    ${{ secrets.TRELLO_TOKEN }}
           TRELLO_BOARD_ID: ${{ secrets.TRELLO_BOARD_ID }}
           # Já vêm prontos, não precisa cadastrar:
-          GH_TOKEN:        ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN:        ${{ secrets.GH_TOKEN }}
           GH_REPO:         ${{ github.repository }}
           # Opcionais — cadastre em ... > Variables (não são segredo)
           TRELLO_DONE_LIST:        ${{ vars.TRELLO_DONE_LIST }}

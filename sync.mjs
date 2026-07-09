@@ -235,7 +235,13 @@ async function ghLoginForMember(mid) {
     if (mapped) cands.push(mapped);       // 1) mapeamento manual (mais confiável)
     cands.push(m.username);               // 2) muita gente reusa o mesmo @ nos dois
     if (m.email) {                        // 3) email, quando o Trello expõe
-      try { const r = await gh(`/search/users?q=${encodeURIComponent(m.email)}+in:email`); if (r?.items?.[0]) cands.push(r.items[0].login); } catch {}
+      try { 
+        const r = await gh(`/search/users?q=${encodeURIComponent(m.email)}+in:email`);
+        console.log(r);
+        if (r?.items?.[0]) cands.push(r.items[0].login); 
+      } catch (error){
+        console.log('error in ghLoginForMember', error);
+      }
     }
     for (const c of cands) { const hit = assignableByLower.get(String(c).toLowerCase()); if (hit) { result = hit; break; } }
   }

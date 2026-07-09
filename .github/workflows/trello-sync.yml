@@ -1,13 +1,13 @@
 name: Trello <-> GitHub Sync
 
 on:
-  schedule:
+  #schedule:
     # Cron do GitHub Actions é sempre em UTC. Pernambuco (America/Recife) = UTC-3,
     # sem horário de verão. Queremos rodar de hora em hora, EXCETO 00:00–06:00 local.
     #   00:00–06:00 local  ==  03:00–08:59 UTC  -> NÃO roda
     #   sobram em UTC: 09–23 e 00–02            -> roda
     # (O script ainda confere a hora local em America/Recife como trava extra.)
-    - cron: '0 0-2,9-23 * * *'
+  #  - cron: '0 0-2,9-23 * * *'
   workflow_dispatch: {}   # botão "Run workflow" para rodar na hora
 
 concurrency:

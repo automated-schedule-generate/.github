@@ -180,6 +180,8 @@ const repoLabels = new Set((await ghPaged(`/repos/${OWNER}/${REPO}/labels`)).map
 // Guardamos lower->loginReal para casar sem depender de maiúsculas.
 const assignableByLower = new Map((await ghPaged(`/repos/${OWNER}/${REPO}/assignees`)).map(u => [u.login.toLowerCase(), u.login]));
 
+console.log('assignableByLower', assignableByLower);
+
 const issueByNumber = new Map(allIssues.map(i => [i.number, i]));
 const cardById      = new Map(cards.map(c => [c.id, c]));
 
@@ -250,6 +252,7 @@ async function ghLoginForMember(mid) {
     }
     for (const c of cands) { 
       const hit = assignableByLower.get(String(c).toLowerCase());
+      console.log('hit', hit);
       console.log('2 cands', c);
       if (hit) { result = hit; break; } 
     }

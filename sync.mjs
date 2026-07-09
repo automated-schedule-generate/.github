@@ -239,8 +239,8 @@ async function ghLoginForMember(mid) {
     if (m.email) {                        // 3) email, quando o Trello expõe
       try { 
         console.log('1 m', m)
-        const r = await gh(`/search/users?q=${encodeURIComponent(m.email)}+in:email`);
-        console.log(r);
+        const r = await gh(`/search/users?q=${encodeURIComponent(m.username)}+in:username`);
+        console.log('result', r);
         if (r?.items?.[0]) cands.push(r.items[0].login); 
       } catch (error){
         console.log('error in ghLoginForMember', error);

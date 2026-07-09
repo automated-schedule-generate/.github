@@ -39,7 +39,7 @@ const env = process.env;
 
 
 console.log('testing', env["MY_TOKEN_PERSON"]);
-console.log("testing 2', env["MEMBER_MAP"]);
+console.log('testing 2', env["MEMBER_MAP"]);
 
 
 const req = (k) => {

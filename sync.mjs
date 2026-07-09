@@ -48,9 +48,7 @@ const req = (k) => {
 const TRELLO_KEY = req("TRELLO_KEY");
 const TRELLO_TOKEN = req("TRELLO_TOKEN");
 const BOARD_ID = req("TRELLO_BOARD_ID");
-const GH_TOKEN = req("MY_TOKEN");
-
-console.log("GH_TOKEN", GH_TOKEN);
+const GH_TOKEN = req("GH_MY_TOKEN");
 
 const [OWNER, REPO] = req("GH_REPO").split("/");
 
@@ -78,8 +76,6 @@ for (const pair of (env.MEMBER_MAP || "")
     g2tMember.set(g.toLowerCase(), t);
   }
 }
-
-console.log({ t2gMember, g2tMember });
 
 // ── Janela de silêncio (00:00–06:00 no fuso local, por padrão) ────────────────
 const localHour =
@@ -153,7 +149,6 @@ async function gh(path, { method = "GET", body } = {}) {
   return res.status === 204 ? null : res.json();
 }
 async function ghPaged(path) {
-  console.log("path executing", path);
   const out = [];
   for (let page = 1; ; page++) {
     const sep = path.includes("?") ? "&" : "?";
@@ -219,7 +214,6 @@ const labelByName = new Map(
 const boardMembers = await trello(`/boards/${BOARD_ID}/members`, {
   params: { fields: "username,fullName" },
 });
-console.log(boardMembers);
 const memberById = new Map();
 for (const m of boardMembers) {
   let email = null;
@@ -267,15 +261,11 @@ const repoLabels = new Set(
 // Só é possível atribuir como responsável quem tem acesso ao repo (colaboradores).
 // Guardamos lower->loginReal para casar sem depender de maiúsculas.
 const assignableByLower = new Map(
-  (
-    await ghPaged(`/repos/${OWNER}/${REPO}/collaborators`).then((r) => {
-      console.log("assignees", r);
-      return r;
-    })
-  ).map((u) => [u.login.toLowerCase(), u.login]),
+  (await ghPaged(`/repos/${OWNER}/${REPO}/collaborators`)).map((u) => [
+    u.login.toLowerCase(),
+    u.login,
+  ]),
 );
-
-console.log("assignableByLower", assignableByLower);
 
 const issueByNumber = new Map(allIssues.map((i) => [i.number, i]));
 const cardById = new Map(cards.map((c) => [c.id, c]));
@@ -368,18 +358,14 @@ async function ghLoginForMember(mid) {
   if (m) {
     const cands = [];
     const mapped = t2gMember.get(m.username.toLowerCase());
-    console.log("1 mapped", mapped);
     if (mapped) cands.push(mapped); // 1) mapeamento manual (mais confiável)
     cands.push(m.username); // 2) muita gente reusa o mesmo @ nos dois
-    console.log("1 cands", cands);
     if (m.username) {
       // 3) username, quando o Trello expõe
       try {
-        console.log("1 m", m);
         const r = await gh(
           `/search/users?q=${encodeURIComponent(m.username)}+in:username`,
         );
-        console.log("result", r);
         if (r?.items?.[0]) cands.push(r.items[0].login);
       } catch (error) {
         console.log("error in ghLoginForMember", error);
@@ -387,8 +373,6 @@ async function ghLoginForMember(mid) {
     }
     for (const c of cands) {
       const hit = assignableByLower.get(String(c).toLowerCase());
-      console.log("hit", hit);
-      console.log("2 cands", c);
       if (hit) {
         result = hit;
         break;
@@ -397,8 +381,6 @@ async function ghLoginForMember(mid) {
   }
   loginMemo.set(mid, result);
 
-  console.log("mid", mid);
-  console.log("result", result);
   return result;
 }
 async function resolveAssignees(card) {

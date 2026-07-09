@@ -62,6 +62,7 @@ const MIRROR             = _mirror === '' ? true : _mirror === 'true';
 // MEMBER_MAP: casa membro do Trello com login do GitHub (nos dois sentidos)
 const t2gMember = new Map(); // trelloUsername(lower) -> githubLogin
 const g2tMember = new Map(); // githubLogin(lower)    -> trelloUsername
+console.log('aqui estou eu, nessa bixiga', env.MEMBER_MAP);
 for (const pair of (env.MEMBER_MAP || '').split(',').map(s => s.trim()).filter(Boolean)) {
   const [t, g] = pair.split(':').map(x => x && x.trim());
   if (t && g) { t2gMember.set(t.toLowerCase(), g); g2tMember.set(g.toLowerCase(), t); }

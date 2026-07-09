@@ -67,6 +67,8 @@ for (const pair of (env.MEMBER_MAP || '').split(',').map(s => s.trim()).filter(B
   if (t && g) { t2gMember.set(t.toLowerCase(), g); g2tMember.set(g.toLowerCase(), t); }
 }
 
+console.log({ t2gMember, g2tMember});
+
 // ── Janela de silêncio (00:00–06:00 no fuso local, por padrão) ────────────────
 const localHour = Number(
   new Intl.DateTimeFormat('en-GB', { timeZone: TZ, hour: '2-digit', hour12: false }).format(new Date())

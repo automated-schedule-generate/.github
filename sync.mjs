@@ -238,6 +238,7 @@ async function ghLoginForMember(mid) {
     cands.push(m.username);               // 2) muita gente reusa o mesmo @ nos dois
     if (m.email) {                        // 3) email, quando o Trello expõe
       try { 
+        console.log('1 m', m)
         const r = await gh(`/search/users?q=${encodeURIComponent(m.email)}+in:email`);
         console.log(r);
         if (r?.items?.[0]) cands.push(r.items[0].login); 

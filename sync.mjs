@@ -46,6 +46,9 @@ const TRELLO_KEY   = req('TRELLO_KEY');
 const TRELLO_TOKEN = req('TRELLO_TOKEN');
 const BOARD_ID     = req('TRELLO_BOARD_ID');
 const GH_TOKEN     = req('GH_TOKEN');
+
+console.log('GH_TOKEN', GH_TOKEN);
+
 const [OWNER, REPO] = req('GH_REPO').split('/');
 
 const DONE_LIST_NAME     = (env.TRELLO_DONE_LIST || 'Done').trim();

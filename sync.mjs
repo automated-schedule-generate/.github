@@ -118,6 +118,7 @@ async function gh(path, { method = 'GET', body } = {}) {
   return res.status === 204 ? null : res.json();
 }
 async function ghPaged(path) {
+  console.log('path executing', path);
   const out = [];
   for (let page = 1; ; page++) {
     const sep = path.includes('?') ? '&' : '?';

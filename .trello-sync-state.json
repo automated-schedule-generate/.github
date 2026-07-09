@@ -55,11 +55,6 @@
       "origin": "trello",
       "hash": "38d99a8ff5ca4a171382e6264aeebb5866ce569a"
     },
-    "6a4d9ec4b4f2d89e72507058": {
-      "issue": 12,
-      "origin": "github",
-      "hash": "df940ea71d92454d09880c014b877dd9e987f415"
-    },
     "6a4d9ec9c4b26dc71a5d1e5e": {
       "issue": 7,
       "origin": "github",
@@ -74,6 +69,11 @@
       "issue": 39,
       "origin": "trello",
       "hash": "cb82f99224c837e8665a37e9bec44b8b4fc052b9"
+    },
+    "6a4f140607a491c541fd8ff5": {
+      "issue": 40,
+      "origin": "trello",
+      "hash": "8cd79ed6f938b4d5995ca1c2bd6dda5584f12a78"
     }
   }
 }

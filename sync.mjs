@@ -180,7 +180,7 @@ const repoLabels = new Set((await ghPaged(`/repos/${OWNER}/${REPO}/labels`)).map
 // Só é possível atribuir como responsável quem tem acesso ao repo (colaboradores).
 // Guardamos lower->loginReal para casar sem depender de maiúsculas.
 const assignableByLower = new Map(
-    (await ghPaged(`/repos/${OWNER}/${REPO}/assignees`).then(r => {console.log('assignees', r); return r})
+    (await ghPaged(`/repos/${OWNER}/${REPO}/collaborators`).then(r => {console.log('assignees', r); return r})
   ).map(u => [u.login.toLowerCase(), u.login]));
 
 console.log('assignableByLower', assignableByLower);

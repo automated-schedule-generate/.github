@@ -48,7 +48,7 @@ const req = (k) => {
 const TRELLO_KEY = req("TRELLO_KEY");
 const TRELLO_TOKEN = req("TRELLO_TOKEN");
 const BOARD_ID = req("TRELLO_BOARD_ID");
-const GH_TOKEN = req("GH_MY_TOKEN");
+const GH_TOKEN = req("MY_TOKEN_PERSON");
 
 const [OWNER, REPO] = req("GH_REPO").split("/");
 

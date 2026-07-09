@@ -78,24 +78,24 @@ for (const pair of (env.MEMBER_MAP || "")
 }
 
 // ── Janela de silêncio (00:00–06:00 no fuso local, por padrão) ────────────────
-const localHour =
-  Number(
-    new Intl.DateTimeFormat("en-GB", {
-      timeZone: TZ,
-      hour: "2-digit",
-      hour12: false,
-    }).format(new Date()),
-  ) % 24;
-const inQuiet =
-  QUIET_START < QUIET_END
-    ? localHour >= QUIET_START && localHour < QUIET_END
-    : localHour >= QUIET_START || localHour < QUIET_END;
-if (inQuiet) {
-  console.log(
-    `🌙 ${localHour}h em ${TZ} está na janela de silêncio [${QUIET_START}h–${QUIET_END}h). Nada a fazer.`,
-  );
-  process.exit(0);
-}
+// const localHour =
+//   Number(
+//     new Intl.DateTimeFormat("en-GB", {
+//       timeZone: TZ,
+//       hour: "2-digit",
+//       hour12: false,
+//     }).format(new Date()),
+//   ) % 24;
+// const inQuiet =
+//   QUIET_START < QUIET_END
+//     ? localHour >= QUIET_START && localHour < QUIET_END
+//     : localHour >= QUIET_START || localHour < QUIET_END;
+// if (inQuiet) {
+//   console.log(
+//     `🌙 ${localHour}h em ${TZ} está na janela de silêncio [${QUIET_START}h–${QUIET_END}h). Nada a fazer.`,
+//   );
+//   process.exit(0);
+// }
 
 // ── Helpers de API ────────────────────────────────────────────────────────────
 const sha1 = (o) =>
@@ -261,7 +261,7 @@ const repoLabels = new Set(
 // Só é possível atribuir como responsável quem tem acesso ao repo (colaboradores).
 // Guardamos lower->loginReal para casar sem depender de maiúsculas.
 const assignableByLower = new Map(
-  (await ghPaged(`/repos/${OWNER}/${REPO}/collaborators`)).map((u) => [
+  (await ghPaged(`/repos/${OWNER}/${REPO}/assignees`)).map((u) => [
     u.login.toLowerCase(),
     u.login,
   ]),

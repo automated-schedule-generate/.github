@@ -36,6 +36,11 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 
 const env = process.env;
+
+
+console.log('testing', env["MY_TOKEN_PERSON"]);
+
+
 const req = (k) => {
   const v = env[k];
   if (!v) {

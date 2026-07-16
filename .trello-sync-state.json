@@ -104,6 +104,11 @@
       "issue": 47,
       "origin": "trello",
       "hash": "8db5143df7210ccfdfbcce74e1770b65ee7e0ca0"
+    },
+    "6a582dac732a823ea185d41f": {
+      "issue": 48,
+      "origin": "trello",
+      "hash": "d5502696ecd62105c049bb6aae06efb241c316f2"
     }
   }
 }
